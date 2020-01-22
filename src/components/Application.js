@@ -6,6 +6,7 @@ import DayList from "./DayList";
 import Appointment from "components/Appointment/index";
 
 import { getAppointmentsForDay, getInterview } from "helpers/selectors";
+import useVisualMode from "hooks/useVisualMode";
 
 export default function Application(props) {
   // const [day, setDay] = useState("Monday");
@@ -58,9 +59,7 @@ export default function Application(props) {
       </section>
       <section className="schedule">
         {appointments.map(appointment => {
-          console.log(appointment.interview);
           const interview = getInterview(state, appointment.interview);
-          console.log(interview);
           return (
             <Appointment
               key={appointment.id}

@@ -7,3 +7,15 @@ export function getAppointmentsForDay(state, day) {
 
   return appointments;
 }
+
+export function getInterview(state, interview) {
+  if (!interview) {
+    return null;
+  }
+
+  const interviewObj = { ...interview };
+
+  interviewObj.interviewer = state.interviewers[interview.interviewer];
+
+  return interviewObj;
+}

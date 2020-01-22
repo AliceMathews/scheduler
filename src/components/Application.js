@@ -10,12 +10,8 @@ import {
   getInterview,
   getInterviewersForDay
 } from "helpers/selectors";
-import useVisualMode from "hooks/useVisualMode";
 
 export default function Application(props) {
-  // const [day, setDay] = useState("Monday");
-  // const [days, setDays] = useState([]);
-
   const [state, setState] = useState({
     day: "Monday",
     days: [],
@@ -44,6 +40,19 @@ export default function Application(props) {
   const appointments = getAppointmentsForDay(state, state.day);
   const interviewers = getInterviewersForDay(state, state.day);
 
+  function bookInterview(id, interview) {
+    console.log("in application", id, interview);
+    // const interviewCopy = { ...interview };
+    const appointmentCopy = {
+      ...state.appointments[id],
+      interview: { ...interview }
+    };
+
+    const appointmentsCopy = { ...state.appointments, [id]: appointmentCopy };
+
+    setState({ ...state, appointments: appointmentsCopy });
+  }
+
   return (
     <main className="layout">
       <section className="sidebar">
@@ -65,6 +74,7 @@ export default function Application(props) {
       <section className="schedule">
         {appointments.map(appointment => {
           const interview = getInterview(state, appointment.interview);
+
           return (
             <Appointment
               key={appointment.id}
@@ -72,6 +82,11 @@ export default function Application(props) {
               time={appointment.time}
               interview={interview}
               interviewers={interviewers}
+              bookInterview={(id, interview) => {
+                console.log(id);
+                console.log(interview);
+                bookInterview(id, interview);
+              }}
             />
           );
         })}

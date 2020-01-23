@@ -41,7 +41,6 @@ export default function Application(props) {
   const interviewers = getInterviewersForDay(state, state.day);
 
   function bookInterview(id, interview) {
-    // console.log("in application", id, interview);
     const appointmentCopy = {
       ...state.appointments[id],
       interview: { ...interview }
@@ -53,11 +52,9 @@ export default function Application(props) {
       url: `/api/appointments/${id}`,
       method: "PUT",
       data: { interview }
-    })
-      .then(res => {
-        setState({ ...state, appointments: appointmentsCopy });
-      })
-      .catch(err => console.log);
+    }).then(res => {
+      setState({ ...state, appointments: appointmentsCopy });
+    });
   }
 
   function cancelInterview(id) {
@@ -74,11 +71,9 @@ export default function Application(props) {
     return axios({
       url: `/api/appointments/${id}`,
       method: "DELETE"
-    })
-      .then(res => {
-        setState({ ...state, appointments: appointmentsCopy });
-      })
-      .catch(err => console.log);
+    }).then(res => {
+      setState({ ...state, appointments: appointmentsCopy });
+    });
   }
 
   return (

@@ -60,6 +60,27 @@ export default function Application(props) {
       .catch(err => console.log);
   }
 
+  function cancelInterview(id) {
+    console.log("in application level", id);
+
+    const interview = null;
+    const appointmentCopy = {
+      ...state.appointments[id],
+      interview
+    };
+
+    const appointmentsCopy = { ...state.appointments, [id]: appointmentCopy };
+
+    return axios({
+      url: `/api/appointments/${id}`,
+      method: "DELETE"
+    })
+      .then(res => {
+        setState({ ...state, appointments: appointmentsCopy });
+      })
+      .catch(err => console.log);
+  }
+
   return (
     <main className="layout">
       <section className="sidebar">
@@ -90,10 +111,11 @@ export default function Application(props) {
               interview={interview}
               interviewers={interviewers}
               bookInterview={bookInterview}
+              cancelInterview={cancelInterview}
             />
           );
         })}
-        <Appointment key="last" time="6pm" />
+        <Appointment key="last" time="5pm" />
       </section>
     </main>
   );

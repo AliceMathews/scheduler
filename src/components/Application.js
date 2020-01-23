@@ -41,8 +41,7 @@ export default function Application(props) {
   const interviewers = getInterviewersForDay(state, state.day);
 
   function bookInterview(id, interview) {
-    console.log("in application", id, interview);
-    // const interviewCopy = { ...interview };
+    // console.log("in application", id, interview);
     const appointmentCopy = {
       ...state.appointments[id],
       interview: { ...interview }
@@ -50,7 +49,15 @@ export default function Application(props) {
 
     const appointmentsCopy = { ...state.appointments, [id]: appointmentCopy };
 
-    setState({ ...state, appointments: appointmentsCopy });
+    return axios({
+      url: `/api/appointments/${id}`,
+      method: "PUT",
+      data: { interview }
+    })
+      .then(res => {
+        setState({ ...state, appointments: appointmentsCopy });
+      })
+      .catch(err => console.log);
   }
 
   return (
@@ -82,11 +89,7 @@ export default function Application(props) {
               time={appointment.time}
               interview={interview}
               interviewers={interviewers}
-              bookInterview={(id, interview) => {
-                console.log(id);
-                console.log(interview);
-                bookInterview(id, interview);
-              }}
+              bookInterview={bookInterview}
             />
           );
         })}

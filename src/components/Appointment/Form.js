@@ -42,9 +42,8 @@ export default function Form(props) {
           </Button>
           <Button
             confirm
-            onClick={() => {
-              name && interviewer && props.onSave(name, interviewer);
-            }}
+            disabled={!name || !interviewer}
+            onClick={() => props.onSave(name, interviewer)}
           >
             Save
           </Button>

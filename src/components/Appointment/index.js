@@ -1,4 +1,4 @@
-import React, { fragment } from "react";
+import React from "react";
 import "./styles.scss";
 
 import useVisualMode from "hooks/useVisualMode";
@@ -40,8 +40,7 @@ export default function Appointment(props) {
   }
 
   function deleteApt() {
-    // transition(CONFIRM);
-    transition(DELETING);
+    transition(DELETING, true);
     props
       .cancelInterview(props.id)
       .then(() => transition(EMPTY))
@@ -101,18 +100,10 @@ export default function Appointment(props) {
         />
       )}
       {mode === ERROR_SAVE && (
-        <Error
-          message="There was an issue saving"
-          // onClose={() => transition(CREATE, true)}
-          onClose={() => back()}
-        />
+        <Error message="There was an issue saving" onClose={() => back()} />
       )}
       {mode === ERROR_DELETE && (
-        <Error
-          message="There was an issue deleting"
-          // onClose={() => transition(SHOW, true)}
-          onClose={() => back()}
-        />
+        <Error message="There was an issue deleting" onClose={() => back()} />
       )}
     </article>
   );

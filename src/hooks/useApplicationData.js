@@ -4,6 +4,7 @@ import axios from "axios";
 const SET_DAY = "SET_DAY";
 const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
 const SET_INTERVIEW = "SET_INTERVIEW";
+const SET_SPOTS = "SET_SPOTS";
 
 const initialState = {
   day: "Monday",
@@ -29,7 +30,8 @@ function reducer(state, action) {
   if (action.type === SET_INTERVIEW) {
     const appointmentCopy = {
       ...state.appointments[action.value.id],
-      interview: { ...action.value.interview }
+      // interview: { ...action.value.interview }
+      interview: action.value.interview
     };
 
     const appointmentsCopy = {
@@ -38,6 +40,29 @@ function reducer(state, action) {
     };
 
     return { ...state, appointments: appointmentsCopy };
+  }
+
+  if (action.type === SET_SPOTS) {
+    const day = state.day;
+    const dayArr = state.days.find(el => el.name === day).appointments;
+
+    const spots = dayArr.reduce((accumulator, currentVal) => {
+      if (state.appointments[currentVal].interview === null) {
+        return accumulator + 1;
+      } else {
+        return accumulator;
+      }
+    }, 0);
+
+    const newDays = state.days.map(el => {
+      if (el.name === state.day) {
+        return { ...el, spots };
+      } else {
+        return el;
+      }
+    });
+
+    return { ...state, days: newDays };
   }
 }
 
@@ -68,17 +93,19 @@ export default function useApplicationData() {
       data: { interview }
     }).then(res => {
       dispatchState({ type: SET_INTERVIEW, value });
+      dispatchState({ type: SET_SPOTS });
     });
   }
 
   function cancelInterview(id) {
-    const value = { id };
+    const value = { id, interview: null };
 
     return axios({
       url: `/api/appointments/${id}`,
       method: "DELETE"
     }).then(res => {
       dispatchState({ type: SET_INTERVIEW, value });
+      dispatchState({ type: SET_SPOTS });
     });
   }
 

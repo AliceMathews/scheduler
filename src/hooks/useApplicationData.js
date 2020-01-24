@@ -1,13 +1,48 @@
-import { useState, useEffect } from "react";
+import { useEffect, useReducer } from "react";
 import axios from "axios";
 
+const SET_DAY = "SET_DAY";
+const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
+const SET_INTERVIEW = "SET_INTERVIEW";
+
+const initialState = {
+  day: "Monday",
+  days: [],
+  appointments: {},
+  interviewers: {}
+};
+
+function reducer(state, action) {
+  if (action.type === SET_DAY) {
+    return { ...state, day: action.value };
+  }
+
+  if (action.type === SET_APPLICATION_DATA) {
+    return {
+      ...state,
+      days: action.value.resDays.data,
+      appointments: action.value.resAppointments.data,
+      interviewers: action.value.resInterviewers.data
+    };
+  }
+
+  if (action.type === SET_INTERVIEW) {
+    const appointmentCopy = {
+      ...state.appointments[action.value.id],
+      interview: { ...action.value.interview }
+    };
+
+    const appointmentsCopy = {
+      ...state.appointments,
+      [action.value.id]: appointmentCopy
+    };
+
+    return { ...state, appointments: appointmentsCopy };
+  }
+}
+
 export default function useApplicationData() {
-  const [state, setState] = useState({
-    day: "Monday",
-    days: [],
-    appointments: {},
-    interviewers: {}
-  });
+  const [state, dispatchState] = useReducer(reducer, initialState);
 
   useEffect(() => {
     Promise.all([
@@ -16,48 +51,34 @@ export default function useApplicationData() {
       axios.get("/api/interviewers")
     ])
       .then(([resDays, resAppointments, resInterviewers]) => {
-        setState(prev => ({
-          days: resDays.data,
-          appointments: resAppointments.data,
-          interviewers: resInterviewers.data
-        }));
+        const value = { resDays, resAppointments, resInterviewers };
+        dispatchState({ type: SET_APPLICATION_DATA, value });
       })
       .catch(err => console.log);
   }, []);
 
-  const setDay = day => setState(prev => ({ ...prev, day }));
+  const setDay = day => dispatchState({ type: SET_DAY, value: day });
 
   function bookInterview(id, interview) {
-    const appointmentCopy = {
-      ...state.appointments[id],
-      interview: { ...interview }
-    };
-
-    const appointmentsCopy = { ...state.appointments, [id]: appointmentCopy };
+    const value = { id, interview };
 
     return axios({
       url: `/api/appointments/${id}`,
       method: "PUT",
       data: { interview }
     }).then(res => {
-      setState({ ...state, appointments: appointmentsCopy });
+      dispatchState({ type: SET_INTERVIEW, value });
     });
   }
 
   function cancelInterview(id) {
-    const interview = null;
-    const appointmentCopy = {
-      ...state.appointments[id],
-      interview
-    };
-
-    const appointmentsCopy = { ...state.appointments, [id]: appointmentCopy };
+    const value = { id };
 
     return axios({
       url: `/api/appointments/${id}`,
       method: "DELETE"
     }).then(res => {
-      setState({ ...state, appointments: appointmentsCopy });
+      dispatchState({ type: SET_INTERVIEW, value });
     });
   }
 

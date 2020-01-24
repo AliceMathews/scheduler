@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./styles.scss";
 
 import useVisualMode from "hooks/useVisualMode";
@@ -25,6 +25,14 @@ export default function Appointment(props) {
   const { mode, transition, back } = useVisualMode(
     props.interview ? SHOW : EMPTY
   );
+
+  useEffect(() => {
+    if (!props.interview && mode === SHOW) {
+      transition(EMPTY);
+    } else if (props.interview && mode === EMPTY) {
+      transition(SHOW);
+    }
+  }, [props.interview, transition, mode]);
 
   function save(name, interviewer) {
     const interview = {
@@ -58,7 +66,7 @@ export default function Appointment(props) {
           }}
         />
       )}
-      {mode === SHOW && (
+      {mode === SHOW && props.interview && (
         <Show
           student={props.interview.student}
           interviewer={props.interview.interviewer}

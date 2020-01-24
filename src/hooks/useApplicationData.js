@@ -70,6 +70,24 @@ export default function useApplicationData() {
   const [state, dispatchState] = useReducer(reducer, initialState);
 
   useEffect(() => {
+    const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
+
+    webSocket.onopen = () => {
+      // webSocket.send("ping");
+      webSocket.onmessage = event => {
+        const data = JSON.parse(event.data);
+        console.log("Message recieved: ", data);
+        console.log("Message recieved: ", data.id);
+        const value = { id: data.id, interview: data.interview };
+        dispatchState({ type: SET_INTERVIEW, value });
+        dispatchState({ type: SET_SPOTS });
+      };
+    };
+
+    return () => webSocket.close();
+  }, []);
+
+  useEffect(() => {
     Promise.all([
       axios.get("/api/days"),
       axios.get("/api/appointments"),

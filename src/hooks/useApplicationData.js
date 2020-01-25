@@ -43,7 +43,7 @@ function reducer(state, action) {
   }
 
   if (action.type === SET_SPOTS) {
-    const day = state.day;
+    const day = getDayFromAppointmentId(action.value.id, state);
     const dayArr = state.days.find(el => el.name === day).appointments;
 
     const spots = dayArr.reduce((accumulator, currentVal) => {
@@ -55,7 +55,7 @@ function reducer(state, action) {
     }, 0);
 
     const newDays = state.days.map(el => {
-      if (el.name === state.day) {
+      if (el.name === day) {
         return { ...el, spots };
       } else {
         return el;
@@ -66,6 +66,16 @@ function reducer(state, action) {
   }
 }
 
+function getDayFromAppointmentId(id, state) {
+  const days = [...state.days];
+
+  for (const day of days) {
+    if (day.appointments.includes(id)) {
+      return day.name;
+    }
+  }
+}
+
 export default function useApplicationData() {
   const [state, dispatchState] = useReducer(reducer, initialState);
 
@@ -73,19 +83,21 @@ export default function useApplicationData() {
     const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
 
     webSocket.onopen = () => {
-      // webSocket.send("ping");
       webSocket.onmessage = event => {
         const data = JSON.parse(event.data);
-        console.log("Message recieved: ", data);
-        console.log("Message recieved: ", data.id);
         const value = { id: data.id, interview: data.interview };
         dispatchState({ type: SET_INTERVIEW, value });
-        dispatchState({ type: SET_SPOTS });
+        dispatchState({ type: SET_SPOTS, value });
       };
     };
 
     return () => webSocket.close();
   }, []);
+
+  // useEffect(() => {
+  //   dispatchState({ type: SET_SPOTS });
+
+  // }, [state.appointments]);
 
   useEffect(() => {
     Promise.all([
@@ -111,7 +123,7 @@ export default function useApplicationData() {
       data: { interview }
     }).then(res => {
       dispatchState({ type: SET_INTERVIEW, value });
-      dispatchState({ type: SET_SPOTS });
+      dispatchState({ type: SET_SPOTS, value });
     });
   }
 
@@ -123,9 +135,19 @@ export default function useApplicationData() {
       method: "DELETE"
     }).then(res => {
       dispatchState({ type: SET_INTERVIEW, value });
-      dispatchState({ type: SET_SPOTS });
+      dispatchState({ type: SET_SPOTS, value });
     });
   }
+
+  // function getDayFromAppointmentId(id) {
+  //   const days = [...state.days];
+
+  //   for (const day of days) {
+  //     if (day.appointments.includes(id)) {
+  //       return day.name;
+  //     }
+  //   }
+  // }
 
   return { state, setDay, bookInterview, cancelInterview };
 }

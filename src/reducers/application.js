@@ -15,7 +15,7 @@ export default function reducer(state, action) {
   if (action.type === SET_INTERVIEW) {
     const appointmentCopy = {
       ...state.appointments[action.value.id],
-      // interview: { ...action.value.interview }
+
       interview: action.value.interview
     };
 

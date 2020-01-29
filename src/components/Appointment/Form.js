@@ -61,12 +61,7 @@ export default function Form(props) {
           <Button danger onClick={() => cancel()}>
             Cancel
           </Button>
-          <Button
-            confirm
-            // disabled={!name || !interviewer}
-            // onClick={() => props.onSave(name, interviewer)}
-            onClick={() => validate()}
-          >
+          <Button confirm onClick={() => validate()}>
             Save
           </Button>
         </section>

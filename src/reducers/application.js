@@ -1,7 +1,7 @@
 export default function reducer(state, action) {
-  // if (action.type === SET_DAY) {
-  //   return { ...state, day: action.value };
-  // }
+  if (action.type === SET_DAY) {
+    return { ...state, day: action.value };
+  }
 
   if (action.type === SET_APPLICATION_DATA) {
     return {

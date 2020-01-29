@@ -28,7 +28,7 @@ export default function Form(props) {
       return;
     }
 
-    setError({ ...error, name: "", interviewer: "" });
+    setError({ ...error, name: "" });
     props.onSave(name, interviewer);
   };
 

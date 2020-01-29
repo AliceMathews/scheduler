@@ -23,12 +23,12 @@ export default function Form(props) {
       return;
     }
 
-    // if (!interviewer) {
-    //   setError({ ...error, interviewer: "Please choose an interviewer" });
-    //   return;
-    // }
+    if (!interviewer) {
+      setError({ ...error, interviewer: "Please choose an interviewer" });
+      return;
+    }
 
-    setError({ ...error, name: "" });
+    setError({ ...error, name: "", interviewer: "" });
     props.onSave(name, interviewer);
   };
 

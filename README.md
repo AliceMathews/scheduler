@@ -2,6 +2,8 @@
 
 A React application that allows users to book and cancel interviews. It combines a concise API with a WebSocket server to build a realtime experience.
 
+Link to deployed app: https://interview-scheduler-lhlabs.netlify.com/
+
 ## Final Product
 
 Screenshot of the page on load
